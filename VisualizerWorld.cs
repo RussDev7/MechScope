@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace MechScope
 {
-    internal class VisualizerWorld : ModWorld
+    internal class VisualizerWorld : ModSystem
     {
         private class WireSegment
         {
@@ -68,7 +69,7 @@ namespace MechScope
         private static Dictionary<Point16, bool> WiringWireSkip;
         private static Vector2[] WiringTeleporters;
 
-        public override void Initialize()
+        public override void OnWorldLoad()/* tModPorter Suggestion: Also override OnWorldUnload, and mirror your worldgen-sensitive data initialization in PreWorldGen */
         {
             if (!Main.dedServ)
             {
@@ -176,13 +177,13 @@ namespace MechScope
 
         private void DrawTileMarker(Point16 tile, ColoredMark mark)
         {
-            Vector2 text = Main.fontMouseText.MeasureString(mark.mark);
+            Vector2 text = FontAssets.MouseText.Value.MeasureString(mark.mark);
             Vector2 loc = new Vector2(tile.X * 16 - (int)Main.screenPosition.X + 8, tile.Y * 16 - (int)Main.screenPosition.Y + 12) - text / 2;
 
             if (Main.LocalPlayer.gravDir == -1)
                 loc.Y = Main.screenHeight - loc.Y - 16;
 
-            Main.spriteBatch.DrawString(Main.fontMouseText, mark.mark, loc, mark.color);
+            Main.spriteBatch.DrawString(FontAssets.MouseText.Value, mark.mark, loc, mark.color);
         }
 
         private void DrawTileBorder(Point16 tile, Color color, int width = 1, int height = 1)
