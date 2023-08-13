@@ -1,6 +1,10 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using MechScope.UI;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Reflection;
 using Terraria;
@@ -17,7 +21,7 @@ namespace MechScope
         public static ModKeybind keySettings;
         public static SettingsUI settingsUI;
 
-        private static HarmonyInstance harmonyInstance;
+        private static Harmony harmonyInstance;
         private static UserInterface userInterface;
         public static LegacyGameInterfaceLayer UILayer;
 
@@ -32,7 +36,7 @@ namespace MechScope
         public override void Load()
         {
             if (harmonyInstance == null)
-                harmonyInstance = HarmonyInstance.Create(Name);
+                harmonyInstance = new Harmony(Name);
 
             harmonyInstance.PatchAll();
 

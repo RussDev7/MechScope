@@ -69,12 +69,16 @@ namespace MechScope
         private static Dictionary<Point16, bool> WiringWireSkip;
         private static Vector2[] WiringTeleporters;
 
-        public override void OnWorldLoad()/* tModPorter Suggestion: Also override OnWorldUnload, and mirror your worldgen-sensitive data initialization in PreWorldGen */
+        public override void OnWorldLoad() /* tModPorter Suggestion: Also override OnWorldUnload, and mirror your worldgen-sensitive data initialization in PreWorldGen */
         {
             if (!Main.dedServ)
             {
-                pixel = new Texture2D(Main.graphics.GraphicsDevice, 1, 1);
-                pixel.SetData(new Color[] { Color.White });
+                Main.QueueMainThreadAction(() =>
+                {
+                    Texture2D texture = new Texture2D(Main.graphics.GraphicsDevice, 1, 1);
+                    texture.SetData(new Color[] { Color.White });
+                    pixel = texture;
+                });
             }
 
             StartHighlight = new List<Rectangle>();
@@ -125,8 +129,11 @@ namespace MechScope
                 DrawTileBorder(PointHighlight, Color.Red);
         }
 
-        private void DrawIndicators()
+        private static void DrawIndicators()
         {
+            if (pixel == null)
+                return;
+
             Color indicatorColor = Color.Yellow;
 
             if (SuspendableWireManager.Running)
@@ -140,6 +147,9 @@ namespace MechScope
 
         private void DrawWireSegments()
         {
+            if (pixel == null)
+                return;
+
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
 
@@ -188,6 +198,9 @@ namespace MechScope
 
         private void DrawTileBorder(Point16 tile, Color color, int width = 1, int height = 1)
         {
+            if (pixel == null)
+                return;
+
             Rectangle rect = WorldRectToScreen(new Rectangle(tile.X * 16, tile.Y * 16, width * 16, height * 16));
 
             Main.spriteBatch.Draw(pixel, new Rectangle(rect.X, rect.Y, rect.Width, 2), null, color);
